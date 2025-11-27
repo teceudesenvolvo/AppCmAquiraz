@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "CM Pacatuba",
-    "slug": "bluappcamarapacatuba",
+    "name": "CM Aquiraz",
+    "slug": "bluappcamaraaquiraz",
     "version": "1.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true,
-      "bundleIdentifier": "com.cmpacatuba.cmpacatuba",
+      "bundleIdentifier": "com.cmaquiraz.cmpaquiraz",
       "infoPlist": {
         "UIBackgroundModes": [
           "remote-notification"
