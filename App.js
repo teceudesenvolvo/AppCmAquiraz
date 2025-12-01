@@ -7,6 +7,7 @@ import {
   performInitialSignIn,
   onAuthStateChanged,
 } from "./firebaseConfig";
+
 import MainApp from "./MainApp"; // Navegador de abas
 import LoginScreen from "./screens/Login";
 import CadastroScreen from "./screens/Cadastro"; // Importa a tela de cadastro
@@ -16,6 +17,13 @@ import TvCamaraScreen from "./screens/SubPages/TvCamara";
 import VereadoresScreen from "./screens/SubPages/Vereadores";
 import ProconScreen from "./screens/SubPages/Procon";
 import LicitacoesScreen from "./screens/SubPages/Licitacoes";
+
+// SubPages
+import AgendamentoScreen from "./screens/SubPages/Agendamento"; 
+import ContatoConfiancaScreen from "./screens/SubPages/ContatoConfianca";
+import DenunciaScreen from "./screens/SubPages/RealizarDenuncia";
+import NotificacoesScreen from "./screens/SubPages/Notificacoes";
+import AtendeProcMulher from "./screens/SubPages/FormProcuradoria";
 
 // A inicialização do Firebase agora é feita dentro de firebaseConfig.js
 
@@ -77,6 +85,13 @@ export default function App() {
             <Stack.Screen name="Vereadores" component={VereadoresScreen} />
             <Stack.Screen name="Procon" component={ProconScreen} />
             <Stack.Screen name="Licitacoes" component={LicitacoesScreen} />
+            {/* Adiciona as telas subpages */}
+            <Stack.Screen name="Agendamento" component={AgendamentoScreen} />
+            <Stack.Screen name="RealizarDenuncia" component={DenunciaScreen} />
+            <Stack.Screen name="ContatoConfianca" component={ContatoConfiancaScreen} />
+            <Stack.Screen name="Denuncia" component={DenunciaScreen} />
+            <Stack.Screen name="Notificacoes" component={NotificacoesScreen} />
+            <Stack.Screen name="AtendeProcMulher" component={AtendeProcMulher} />
           </>
         ) : (
           // Usuário não está logado, mostra as telas de autenticação

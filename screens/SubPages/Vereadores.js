@@ -52,7 +52,7 @@ const VereadoresScreen = ({ navigation }) => {
                 setLoadingMaterias(true);
                 setMaterias([]);
                 try {
-                    const response = await fetch(`https://www.cmpacatuba.ce.gov.br/dadosabertosexportar?d=materias&a=&f=json&vereador=${selectedVereador.Id}`);
+                    const response = await fetch(`https://www.cmpacatuba.ce.gov.br/dadosabertosexportar?d=materias&a=&f=json&vereador=${selectedVereador.Autor}`);
                     const data = await response.json();
                     if (data && Array.isArray(data)) {
                         setMaterias(data.reverse()); // Inverte a ordem do array
@@ -164,7 +164,7 @@ const VereadoresScreen = ({ navigation }) => {
                                 <FlatList
                                     data={materias}
                                     renderItem={renderMateriaItem}
-                                    keyExtractor={(item, index) => item.Id || String(index)}
+                                    keyExtractor={(item, index) => `${item.Id || 'materia'}-${index}`}
                                     scrollEnabled={false} // Desabilita o scroll da FlatList interna
                                 />
                             ) : (

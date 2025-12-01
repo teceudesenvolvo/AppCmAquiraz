@@ -219,7 +219,7 @@ const ProcuradoriaMulherScreen = ({ navigation }) => {
                 }
             />
 
-            <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('FormProcuradoria')}>
+            <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('AtendeProcMulher')}>
                 <Icon name="add" size={30} color="#fff" />
             </TouchableOpacity>
         </View>

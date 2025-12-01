@@ -539,7 +539,7 @@ const App = ({ navigation }) => {
                         ) : (
                             vereadores.map((item) => (
                                 <TouchableOpacity
-                                    key={String(item.id || item.ID || item.nome || Math.random())}
+                                    key={item.id}
                                     style={styles.itemButton}
                                     onPress={() => handleSelectItem(
                                         { id: item.id, nome: item.name }, // Ajustado para 'name' do user object

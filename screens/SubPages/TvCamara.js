@@ -29,7 +29,7 @@ const TVWebScreen = ({ navigation }) => {
     // Substitua 'YOUR_API_KEY' pela sua chave de API do YouTube.
     // Lembre-se de restringir esta chave de API para evitar uso indevido.
     const YOUTUBE_API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY;
-    const PLAYLIST_ID = 'PLmz0IMGXMgF996ottv9cmJQvZDzglOtXR';
+    const PLAYLIST_ID = 'PLTrq6afnTQmGtNTPcf5fidnO6wF4ZtSgU';
 
     // DEBUG: Verifique se a chave está sendo carregada.
     console.log('Chave da API do YouTube:', YOUTUBE_API_KEY ? 'Carregada' : 'NÃO CARREGADA (undefined)');
@@ -48,7 +48,7 @@ const TVWebScreen = ({ navigation }) => {
                 }
 
                 const fetchedVideos = data.items.map(item => ({
-                    id: item.contentDetails.videoId,
+                    id: item.id, // Correção: Usar o ID do item da playlist, que é garantido como único.
                     title: item.snippet.title,
                     description: item.snippet.description,
                     thumbnail: (item.snippet.thumbnails && item.snippet.thumbnails.high && item.snippet.thumbnails.high.url) ? item.snippet.thumbnails.high.url : '',
@@ -98,7 +98,7 @@ const TVWebScreen = ({ navigation }) => {
             }}
         >
             <Image
-                source={item.thumbnail ? { uri: item.thumbnail } : require('../../assets/logo-pacatuba.png')}
+                source={item.thumbnail ? { uri: item.thumbnail } : require('../../assets/logo.png')}
                 style={styles.videoThumbnail}
             />
             <View style={styles.videoInfo}>
@@ -114,7 +114,7 @@ const TVWebScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back" size={24} color="#000" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Tv Câmara Pacatuba</Text>
+                <Text style={styles.headerTitle}>Tv Câmara</Text>
             </View>
             <Text style={styles.subHeaderTitle}>Assista Agora</Text>
             {selectedVideo && (

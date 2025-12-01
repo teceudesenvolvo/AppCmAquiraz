@@ -49,7 +49,7 @@ const ContratacoesScreen = ({ navigation }) => {
     const [showModalidadePicker, setShowModalidadePicker] = useState(false);
     
     // CNPJ for Câmara Municipal de Pacatuba
-    const cnpj = '06578447000129';
+    const cnpj = '00133185000102';
     const dataInicial = `${ano}0101`;
     const dataFinal = `${ano}1231`;
 
