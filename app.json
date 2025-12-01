@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#080A6C"
+      "backgroundColor": "#043434"
     },
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
