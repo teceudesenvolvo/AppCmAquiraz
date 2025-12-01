@@ -6,9 +6,10 @@ import {
   getFirebaseOnAuthStateChanged,
   performInitialSignIn,
 } from "./firebaseConfig";
-import MainApp from "./MainApp"; // 1. Importa o seu aplicativo principal
+import MainApp from "./MainApp";
+import LoginScreen from "./screens/Login"; // <-- CERTIFIQUE-SE QUE EXISTE
 
-// Objeto de configuração do Firebase (substitua com seus dados reais)
+// Config do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBGjXw1R8qtozYGQ4NeyNKYWfiLF_PHLhc",
   authDomain: "cm-aquiraz.firebaseapp.com",
@@ -19,50 +20,46 @@ const firebaseConfig = {
   measurementId: "G-GT37651WMY"
 };
 
-// Inicializa o Firebase uma única vez na inicialização do app
+// Inicializa Firebase uma única vez
 initializeFirebase(firebaseConfig);
 
-/**
- * Componente de wrapper que gerencia o estado de autenticação do Firebase.
- * Ele mostra uma tela de carregamento enquanto verifica o usuário.
- */
 function AuthWrapper({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  console.log("AppWrapper: Iniciando componente.");
+  console.log("AuthWrapper: inicializando...");
 
   useEffect(() => {
-    // O listener de autenticação precisa ser registrado antes de qualquer outra coisa.
     const auth = getFirebaseAuth();
     const onAuth = getFirebaseOnAuthStateChanged();
 
-    console.log("Registrando listener de autenticação...");
+    console.log("Registrando listener do Firebase Auth...");
+    
+    // Listener oficial do Firebase
     const unsubscribe = onAuth(auth, (userData) => {
-      console.log("Auth state mudou:", userData ? userData.uid : "deslogado");
+      console.log("🔥 Auth state mudou:", userData ? userData.uid : "deslogado");
+
       setUser(userData);
-      setIsLoading(false); // Remove o loading assim que o estado de auth é conhecido
+      setIsLoading(false);
     });
 
-    // Função assíncrona para lidar com a inicialização e login
+    // Tentativa de login automático via custom token
     const initializeAndSignIn = async () => {
-      // Verifica se um token de autenticação inicial foi injetado no app
       const initialAuthToken =
-        typeof __initial_auth_token !== "undefined" ? __initial_auth_token : null;
-      
-      // Tenta fazer o login inicial com o token
+        typeof __initial_auth_token !== "undefined"
+          ? __initial_auth_token
+          : null;
+
       await performInitialSignIn(initialAuthToken);
     };
 
     initializeAndSignIn();
 
-    return () => {
-      unsubscribe(); // Limpa o listener ao desmontar o componente
-    };
+    return () => unsubscribe();
   }, []);
 
   if (isLoading) {
-    console.log("AppWrapper: Renderizando tela de carregamento.");
+    console.log("AuthWrapper: renderizando loader...");
     return (
       <View
         style={{
@@ -77,19 +74,21 @@ function AuthWrapper({ children }) {
     );
   }
 
-  console.log("AppWrapper: Renderizando children (app pronto).");
+  // ⚠️ Se não há usuário logado, abre Login
+  if (!user) {
+    console.log("AuthWrapper: nenhum usuário → exibindo Login");
+    return <LoginScreen />;
+  }
+
+  // ✔️ Usuário existe → renderiza app
+  console.log("AuthWrapper: usuário autenticado → abrindo MainApp");
   return React.cloneElement(children, { user });
 }
 
-/**
- * Este é o componente raiz do aplicativo.
- * Ele usa o AuthWrapper para garantir que o Firebase esteja pronto
- * antes de renderizar o aplicativo principal (MainApp).
- */
 export default function App() {
   return (
     <AuthWrapper>
-      <MainApp /> 
+      <MainApp />
     </AuthWrapper>
   );
 }
