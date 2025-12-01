@@ -28,7 +28,7 @@ const VereadoresScreen = ({ navigation }) => {
     useEffect(() => {
         const fetchVereadores = async () => {
             try {
-                const response = await fetch('https://cmpacatuba.ce.gov.br/dadosabertosexportar?d=vereadores&a=&f=json&itens_por_pagina=20');
+                const response = await fetch('https://cmaquiraz.ce.gov.br/dadosabertosexportar?d=vereadores&a=&f=json&itens_por_pagina=20');
                 const data = await response.json();
                 setVereadores(data);
                 if (data.length > 0) {

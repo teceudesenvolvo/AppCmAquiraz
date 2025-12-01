@@ -19,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await fetch('https://www.cmpacatuba.ce.gov.br/dadosabertosexportar?d=noticias&a=&f=json');
+                const response = await fetch('https://www.cmaquiraz.ce.gov.br/dadosabertosexportar?d=noticias&a=&f=json');
                 const dados = await response.json();
                 
                 // --- CORREÇÃO AQUI ---
@@ -123,14 +123,14 @@ const HomeScreen = ({ navigation }) => {
                             // estiver em 'screens/Inicio.js'.
                             // Se a imagem estiver em 'assets/logo-pacatuba-azul.png', o caminho é correto.
                             // Mantendo o caminho original, mas adicionando este comentário para clareza.
-                            source={require('../assets/logo-pacatuba-azul.png')}
+                            source={require('../assets/logo.png')}
                             style={styles.logoHeader}
                             resizeMode="contain"
                         />
                     </View>
                     <View style={styles.headerRight}>
                         <TouchableOpacity style={styles.iconButton} onPress={handleNotificationPage}>
-                            <Ionicons name="notifications" size={25} color="#080A6C" />
+                            <Ionicons name="notifications" size={25} color="#043434" />
                             {unreadNotificationCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationBadgeText}>{unreadNotificationCount}</Text>
@@ -173,7 +173,7 @@ const HomeScreen = ({ navigation }) => {
                 {/* Seção de Notícias */}
                 <Text style={styles.sectionTitle}>Notícias</Text>
                 {loading ? (
-                    <ActivityIndicator size="large" color="#080A6C" />
+                    <ActivityIndicator size="large" color="#043434" />
                 ) : (
                     <View style={styles.newsContainer}>
                         {news && news.length > 0 ? (
@@ -251,9 +251,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logoHeader: {
-        width: 120,
+        width: 150,
         height: 50,
-        marginLeft: 0,
+        marginLeft: -30,
+        marginTop: -10,
     },
     headerRight: {
         flexDirection: 'row',
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
     pageTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#080A6C',
+        color: '#043434',
         marginBottom: 20,
     },
     searchBar: {
@@ -309,7 +310,7 @@ const styles = StyleSheet.create({
         width: 55,
         height: 55,
         borderRadius: 27.5,
-        backgroundColor: '#080A6C',
+        backgroundColor: '#043434',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 5,
@@ -390,7 +391,7 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     cancelButton: {
-        color: '#080A6C',
+        color: '#043434',
         fontSize: 16,
         marginLeft: 15,
     },

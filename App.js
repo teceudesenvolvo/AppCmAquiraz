@@ -1,43 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
-  initializeFirebase,
-  getFirebaseAuth,
-  getFirebaseOnAuthStateChanged,
+  AUTH,
   performInitialSignIn,
+  onAuthStateChanged,
 } from "./firebaseConfig";
-import MainApp from "./MainApp";
-import LoginScreen from "./screens/Login"; // <-- CERTIFIQUE-SE QUE EXISTE
+import MainApp from "./MainApp"; // Navegador de abas
+import LoginScreen from "./screens/Login";
+import CadastroScreen from "./screens/Cadastro"; // Importa a tela de cadastro
 
-// Config do Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyBGjXw1R8qtozYGQ4NeyNKYWfiLF_PHLhc",
-  authDomain: "cm-aquiraz.firebaseapp.com",
-  projectId: "cm-aquiraz",
-  storageBucket: "cm-aquiraz.firebasestorage.app",
-  messagingSenderId: "911998115784",
-  appId: "1:911998115784:web:832cd8645683ebc83c6afd",
-  measurementId: "G-GT37651WMY"
-};
+// Importando as telas que serão navegadas a partir do Início
+import TvCamaraScreen from "./screens/SubPages/TvCamara";
+import VereadoresScreen from "./screens/SubPages/Vereadores";
+import ProconScreen from "./screens/SubPages/Procon";
+import LicitacoesScreen from "./screens/SubPages/Licitacoes";
 
-// Inicializa Firebase uma única vez
-initializeFirebase(firebaseConfig);
+// A inicialização do Firebase agora é feita dentro de firebaseConfig.js
 
-function AuthWrapper({ children }) {
+const Stack = createNativeStackNavigator();
+
+export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  console.log("AuthWrapper: inicializando...");
-
   useEffect(() => {
-    const auth = getFirebaseAuth();
-    const onAuth = getFirebaseOnAuthStateChanged();
-
-    console.log("Registrando listener do Firebase Auth...");
-    
-    // Listener oficial do Firebase
-    const unsubscribe = onAuth(auth, (userData) => {
-      console.log("🔥 Auth state mudou:", userData ? userData.uid : "deslogado");
+    const unsubscribe = onAuthStateChanged(AUTH, (userData) => {
+      console.log("Auth state mudou:", userData ? userData.uid : "deslogado");
 
       setUser(userData);
       setIsLoading(false);
@@ -59,7 +49,7 @@ function AuthWrapper({ children }) {
   }, []);
 
   if (isLoading) {
-    console.log("AuthWrapper: renderizando loader...");
+    console.log("App: Verificando autenticação...");
     return (
       <View
         style={{
@@ -74,21 +64,28 @@ function AuthWrapper({ children }) {
     );
   }
 
-  // ⚠️ Se não há usuário logado, abre Login
-  if (!user) {
-    console.log("AuthWrapper: nenhum usuário → exibindo Login");
-    return <LoginScreen />;
-  }
-
-  // ✔️ Usuário existe → renderiza app
-  console.log("AuthWrapper: usuário autenticado → abrindo MainApp");
-  return React.cloneElement(children, { user });
-}
-
-export default function App() {
   return (
-    <AuthWrapper>
-      <MainApp />
-    </AuthWrapper>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {user ? (
+          // Usuário está logado, mostra o app principal
+          <>
+            <Stack.Screen name="MainApp">
+              {(props) => <MainApp {...props} user={user} />}
+            </Stack.Screen>
+            <Stack.Screen name="TvCamara" component={TvCamaraScreen} />
+            <Stack.Screen name="Vereadores" component={VereadoresScreen} />
+            <Stack.Screen name="Procon" component={ProconScreen} />
+            <Stack.Screen name="Licitacoes" component={LicitacoesScreen} />
+          </>
+        ) : (
+          // Usuário não está logado, mostra as telas de autenticação
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Cadastro" component={CadastroScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }

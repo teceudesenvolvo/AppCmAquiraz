@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
-import Logo  from '../assets/logo-pacatuba.png';
+import Logo  from '../assets/icon.png';
 
 // CORREÇÃO CRÍTICA: Mudança de 'auth' e 'db' (minúsculas) para 'AUTH' e 'DB' (maiúsculas) 
 // para corresponder ao que é exportado em firebaseConfig.js.
@@ -255,7 +255,7 @@ const CadastroScreen = ({ navigation }) => {
         <View style={styles.container}>
             <StatusBar style="light" />
             <LinearGradient
-                colors={['#080A6C', '#080A6C']}
+                colors={['#043434', '#043434']}
                 style={styles.gradient}
             >
                 <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -529,8 +529,8 @@ const styles = StyleSheet.create({
     },
     logo: {
         width: 500,
-        height: 150,
-        top: 100,
+        height: 170,
+        top: 80,
         borderRadius: 20,
         zIndex: -1,
         position: 'absolute',

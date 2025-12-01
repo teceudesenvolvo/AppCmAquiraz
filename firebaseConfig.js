@@ -9,78 +9,52 @@ import {
 } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
-// Variáveis para armazenar as instâncias dos serviços Firebase
-let app;
-let AUTH;
-let DB;
-let FIRESTORE;
+// Config do Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBGjXw1R8qtozYGQ4NeyNKYWfiLF_PHLhc",
+    authDomain: "cm-aquiraz.firebaseapp.com",
+    projectId: "cm-aquiraz",
+    storageBucket: "cm-aquiraz.firebasestorage.app",
+    messagingSenderId: "911998115784",
+    appId: "1:911998115784:web:832cd8645683ebc83c6afd",
+    measurementId: "G-GT37651WMY"
+};
 
-/**
- * Inicializa o app Firebase e os serviços associados (Auth, DB, Firestore).
- * Garante que a inicialização ocorra apenas uma vez.
- * @param {object} firebaseConfig - O objeto de configuração do Firebase.
- */
-export function initializeFirebase(firebaseConfig) {
-    if (app) return; // Evita reinicialização
+// Inicializa o app Firebase e os serviços associados.
+// Esta abordagem garante que as instâncias sejam criadas uma única vez.
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-    try {
-        if (getApps().length === 0) {
-            app = initializeApp(firebaseConfig);
-            console.log("Firebase App inicializado com sucesso.");
-        } else {
-            app = getApp();
-            console.log("Instância do Firebase App já existente foi obtida.");
-        }
+const AUTH = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 
-        AUTH = initializeAuth(app, {
-            persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-        });
-        DB = getDatabase(app);
-        FIRESTORE = getFirestore(app);
+const DB = getDatabase(app);
+const FIRESTORE = getFirestore(app);
 
-        console.log("Firebase services (Auth, DB, Firestore) initialized.");
-
-    } catch (error) {
-        console.error("Erro CRÍTICO na inicialização do Firebase:", error);
-    }
-}
-
-// --- Getters para os serviços ---
-// Garantem que os serviços só sejam retornados se a inicialização tiver ocorrido.
-export function getFirebaseAuth() {
-    if (!AUTH) throw new Error("Serviço de Autenticação não inicializado. Chame initializeFirebase() primeiro.");
-    return AUTH;
-}
-
-export function getFirebaseDb() {
-    if (!DB) throw new Error("Serviço de Database não inicializado. Chame initializeFirebase() primeiro.");
-    return DB;
-}
-
-export function getFirebaseFirestore() {
-    if (!FIRESTORE) throw new Error("Serviço Firestore não inicializado. Chame initializeFirebase() primeiro.");
-    return FIRESTORE;
-}
-
-export function getFirebaseOnAuthStateChanged() {
-    if (!AUTH) throw new Error("Serviço de Autenticação não inicializado. Chame initializeFirebase() primeiro.");
-    return onAuthStateChanged;
-}
+console.log("Módulo firebaseConfig carregado e serviços inicializados.");
 
 /**
  * Realiza o login inicial usando um token customizado, se disponível.
  * @param {string} token - O token de autenticação customizado.
  */
-export async function performInitialSignIn(token) {
+async function performInitialSignIn(token) {
     if (!token) {
         console.log("Nenhum token customizado fornecido para o login inicial.");
         return;
     }
     try {
-        const auth = getFirebaseAuth();
-        await signInWithCustomToken(auth, token);
+        await signInWithCustomToken(AUTH, token);
         console.log("Login inicial via token customizado realizado com sucesso.");
     } catch (e) {
         console.error("Erro CRÍTICO na autenticação inicial com token:", e);
     }
+}
+
+// Exporta as instâncias e funções diretamente
+export {
+    AUTH,
+    DB,
+    FIRESTORE,
+    onAuthStateChanged,
+    performInitialSignIn
 }

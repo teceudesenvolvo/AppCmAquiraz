@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 	},
 	activeTab: {
-		backgroundColor: '#080A6C',
+		backgroundColor: '#043434',
 	},
 	tabText: {
 		color: '#4B5563',
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
 	cardTitle: {
 		fontSize: 15,
 		fontWeight: 'bold',
-		color: '#080A6C',
+		color: '#043434',
 		marginBottom: 8,
 	},
 	label: {
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
 		 position: 'absolute',
 		 right: 24,
 		 bottom: '12%',
-		 backgroundColor: '#080A6C',
+		 backgroundColor: '#043434',
 		 width: 60,
 		 height: 60,
 		 borderRadius: 30,

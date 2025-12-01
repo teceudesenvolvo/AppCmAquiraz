@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 // Importa\u00e7\u00e3o das inst\u00e2ncias (AUTH e DB est\u00e3o corretas)
 import { AUTH, DB } from '../firebaseConfig'; 
-import { signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth'; 
 import { ref, onValue, update } from 'firebase/database'; 
 
 // --- Fun\u00e7\u00f5es Utilit\u00e1rias ---
@@ -53,9 +53,7 @@ const ProfileScreen = ({ navigation }) => {
         avatarBase64: null, // Avatar em Base64
     });
 
-    // Usa AUTH (mai\u00fasculo)
     const user = AUTH?.currentUser;
-    // Usa DB (mai\u00fasculo)
     const userRef = user ? ref(DB, `users/${user.uid}`) : null;
 
     // 1. Efeito para buscar dados do perfil em tempo real
@@ -147,7 +145,6 @@ const ProfileScreen = ({ navigation }) => {
     // 3. Fun\u00e7\u00e3o para logout
     const handleLogout = async () => {
         try {
-            // Usa AUTH (mai\u00fasculo)
             if (AUTH) {
                 await signOut(AUTH);
             }

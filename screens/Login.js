@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, KeyboardAvo
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 // Nota: O caminho da imagem deve ser ajustado para o ambiente de execução
-import Logo from '../assets/logo-pacatuba.png'; 
+import Logo from '../assets/icon.png'; 
 
 // Importando AUTH e o método de login por email/senha
 import { AUTH } from '../firebaseConfig'; 
@@ -97,7 +97,7 @@ const LoginScreen = ({navigation}) => {
         <View style={styles.container}>
             <StatusBar style="light" />
             <LinearGradient
-                colors={['#080A6C', '#080A6C']}
+                colors={['#043434', '#043434']}
                 style={styles.gradient}
             >
                 {/* 1. CONTAINER SUPERIOR (BLU) - Altura fixa para performance */}
@@ -179,7 +179,7 @@ const LoginScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#080A6C',
+        backgroundColor: '#043434',
     },
     gradient: {
         flex: 1,
@@ -195,8 +195,8 @@ const styles = StyleSheet.create({
         paddingTop: 50,
     },
     logo: {
-        height: 140,
-        marginTop: 40,
+        height: 200,
+        marginTop: 60,
     },
     // *** OTIMIZAÇÃO CRÍTICA: KAV CONTAINER COM FLEX: 1 E BG BRANCO ***
     kavContainer: {
