@@ -1,97 +1,86 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getFirestore } from 'firebase/firestore';
-import { initializeAuth, getReactNativePersistence, signInWithCustomToken, signInAnonymously } from 'firebase/auth';
+import {
+    initializeAuth,
+    getReactNativePersistence,
+    signInWithCustomToken,
+    onAuthStateChanged,
+} from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
-// ----------------------------------------------------
-// 1. CONFIGURAÇÃO (Usando a configuração fornecida pelo Canvas)
-// ----------------------------------------------------
-// Pega a configuração do ambiente, mas usa a sua como fallback
-let firebaseConfig;
-if (typeof __firebase_config !== 'undefined') {
-    firebaseConfig = JSON.parse(__firebase_config);
-} else {
-    // Sua configuração como fallback se não estiver no ambiente Canvas
-    firebaseConfig = {
-        apiKey: "AIzaSyA5KcFrQRsGJSClouZhv6pPi2--B-Rqba8",
-        authDomain: "cm-pacatuba.firebaseapp.com", 
-        projectId: "cm-pacatuba",
-        databaseURL: "https://cm-pacatuba-default-rtdb.firebaseio.com",
-        storageBucket: "cm-pacatuba.firebasestorage.app",
-        messagingSenderId: "505753867545",
-        appId: "1:505753867545:android:74ed46e034047c7d6f6188"
-    };
-}
+// Variáveis para armazenar as instâncias dos serviços Firebase
+let app;
+let AUTH;
+let DB;
+let FIRESTORE;
 
-// ----------------------------------------------------
-// 2. INICIALIZAÇÃO CENTRALIZADA E EXPORTAÇÃO
-// ----------------------------------------------------
-console.log("Inicializando Firebase App...");
+/**
+ * Inicializa o app Firebase e os serviços associados (Auth, DB, Firestore).
+ * Garante que a inicialização ocorra apenas uma vez.
+ * @param {object} firebaseConfig - O objeto de configuração do Firebase.
+ */
+export function initializeFirebase(firebaseConfig) {
+    if (app) return; // Evita reinicialização
 
-// Inicializa o App primeiro!
-export const app = initializeApp(firebaseConfig);
-
-
-// Inicializa o Auth com persistência AsyncStorage
-export const AUTH = initializeAuth(app, {
-    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-});
-
-// Função utilitária para aguardar o usuário autenticado
-export function waitForAuthUser(timeout = 10000) {
-    return new Promise((resolve, reject) => {
-        const start = Date.now();
-        function check() {
-            if (AUTH.currentUser) {
-                resolve(AUTH.currentUser);
-            } else if (Date.now() - start > timeout) {
-                reject(new Error('Timeout esperando usuário autenticado.'));
-            } else {
-                setTimeout(check, 100);
-            }
+    try {
+        if (getApps().length === 0) {
+            app = initializeApp(firebaseConfig);
+            console.log("Firebase App inicializado com sucesso.");
+        } else {
+            app = getApp();
+            console.log("Instância do Firebase App já existente foi obtida.");
         }
-        check();
-    });
-}
 
+        AUTH = initializeAuth(app, {
+            persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+        });
+        DB = getDatabase(app);
+        FIRESTORE = getFirestore(app);
 
-// Inicializa e exporta o Realtime Database
-export const DB = getDatabase(app);
+        console.log("Firebase services (Auth, DB, Firestore) initialized.");
 
-// Inicializa e exporta o Firestore
-export const FIRESTORE = getFirestore(app);
-
-console.log("Firebase App e serviços prontos para uso.");
-
-// ----------------------------------------------------
-// 3. AUTENTICAÇÃO INICIAL (Garante que o usuário está autenticado para as regras de segurança)
-// Esta função agora SÓ é executada se o token do ambiente existir.
-// ----------------------------------------------------
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-if (initialAuthToken) {
-    const initializeUser = async () => {
-        try {
-            // Usa a instância AUTH exportada
-            await signInWithCustomToken(AUTH, initialAuthToken);
-            console.log("Login inicial via token customizado OK.");
-        } catch (e) {
-            console.error("Erro CRÍTICO na autenticação inicial:", e);
-        }
+    } catch (error) {
+        console.error("Erro CRÍTICO na inicialização do Firebase:", error);
     }
-    initializeUser();
-} else {
-    // Se não houver token, tentamos o login anônimo como backup (Regra de segurança exige um uid)
-     const initializeUserAnon = async () => {
-        try {
-             console.log("Não faça login anonimo se o token customizado estiver ausente.");
-        } catch (e) {
-            console.warn("Não foi possível fazer o login anônimo. As funções do app podem falhar se as regras do Firebase exigirem login.", e);
-        }
-    }
-    initializeUserAnon();
 }
 
-// Nota: A única coisa que o seu componente de login precisa importar é o objeto AUTH.
-// Exemplo de uso: import { AUTH } from './firebaseConfig';
+// --- Getters para os serviços ---
+// Garantem que os serviços só sejam retornados se a inicialização tiver ocorrido.
+export function getFirebaseAuth() {
+    if (!AUTH) throw new Error("Serviço de Autenticação não inicializado. Chame initializeFirebase() primeiro.");
+    return AUTH;
+}
+
+export function getFirebaseDb() {
+    if (!DB) throw new Error("Serviço de Database não inicializado. Chame initializeFirebase() primeiro.");
+    return DB;
+}
+
+export function getFirebaseFirestore() {
+    if (!FIRESTORE) throw new Error("Serviço Firestore não inicializado. Chame initializeFirebase() primeiro.");
+    return FIRESTORE;
+}
+
+export function getFirebaseOnAuthStateChanged() {
+    if (!AUTH) throw new Error("Serviço de Autenticação não inicializado. Chame initializeFirebase() primeiro.");
+    return onAuthStateChanged;
+}
+
+/**
+ * Realiza o login inicial usando um token customizado, se disponível.
+ * @param {string} token - O token de autenticação customizado.
+ */
+export async function performInitialSignIn(token) {
+    if (!token) {
+        console.log("Nenhum token customizado fornecido para o login inicial.");
+        return;
+    }
+    try {
+        const auth = getFirebaseAuth();
+        await signInWithCustomToken(auth, token);
+        console.log("Login inicial via token customizado realizado com sucesso.");
+    } catch (e) {
+        console.error("Erro CRÍTICO na autenticação inicial com token:", e);
+    }
+}
