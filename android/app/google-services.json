@@ -1,22 +1,21 @@
 {
   "project_info": {
-    "project_number": "505753867545",
-    "firebase_url": "https://cm-pacatuba-default-rtdb.firebaseio.com",
-    "project_id": "cm-pacatuba",
-    "storage_bucket": "cm-pacatuba.firebasestorage.app"
+    "project_number": "911998115784",
+    "project_id": "cm-aquiraz",
+    "storage_bucket": "cm-aquiraz.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:505753867545:android:74ed46e034047c7d6f6188",
+        "mobilesdk_app_id": "1:911998115784:android:1e7b41d9fcc5109b3c6afd",
         "android_client_info": {
-          "package_name": "com.cmpacatuba.cmpacatuba"
+          "package_name": "com.cmaquiraz.cmaquiraz"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA5KcFrQRsGJSClouZhv6pPi2--B-Rqba8"
+          "current_key": "AIzaSyDl_8Vligm-VtAIf03_j4-R-oikE6-0VLA"
         }
       ],
       "services": {
