@@ -11,6 +11,7 @@ import {
 import MainApp from "./MainApp"; // Navegador de abas
 import LoginScreen from "./screens/Login";
 import CadastroScreen from "./screens/Cadastro"; // Importa a tela de cadastro
+import { useNotifications } from "./notifications/useNotifications"; // Importa o hook
 
 // Importando as telas que serão navegadas a partir do Início
 import TvCamaraScreen from "./screens/SubPages/TvCamara";
@@ -32,6 +33,9 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
+
+  // Inicia o hook de notificações, passando o usuário logado
+  useNotifications(user);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(AUTH, (userData) => {
