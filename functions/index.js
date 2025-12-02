@@ -1,167 +1,63 @@
-/**
- * Arquivo unificado de Cloud Functions.
- *
- * Correções:
- * 1.  `admin.initializeApp()` é chamado apenas uma vez.
- * 2.  Todas as funções usam a sintaxe v2 para consistência.
- * 3.  A lógica de busca de token foi corrigida para usar o Realtime Database,
- *     que é onde o App.js está salvando o `devicePushToken`.
- * 4.  A função `sendExpoNotification` foi removida por ser obsoleta.
- * 5.  As importações foram consolidadas no topo do arquivo.
-*/
+const {onValueCreated} = require("firebase-functions/v2/database");
+const {initializeApp} = require("firebase-admin/app");
+const {getDatabase} = require("firebase-admin/database");
+const {getMessaging} = require("firebase-admin/messaging");
 
-const admin = require("firebase-admin");
-const {onValueCreated} =
-  require("firebase-functions/v2/database");
-const {onRequest} =
-  require("firebase-functions/v2/https");
-const logger =
-  require("firebase-functions/logger");
-
-admin.initializeApp();
+// Inicializa Admin
+initializeApp();
 
 /**
- * Função acionada por trigger do Realtime Database.
- * Dispara quando um novo nó é criado em
- * /notifications/{notificationId}.
+ * Trigger do Realtime Database (SDK v2)
  */
-exports.sendPanicNotification = onValueCreated(
-    "/notifications/{notificationId}",
-    async (event) => {
-      const snapshot = event.data;
-      const notificationPayload = snapshot.val();
+exports.sendPushNotification = onValueCreated("/notifications/{notificationId}", async (event) => {
+  const snapshot = event.data;
+  const notificationData = snapshot.val();
 
-      const {
-        targetUserId,
-        tituloNotification,
-        descricaoNotification,
-      } = notificationPayload;
+  console.log("Nova notificação:", JSON.stringify(notificationData));
 
-      if (!targetUserId) {
-        logger.log(
-            "Notificação sem targetUserId. Ignorando.",
-        );
-        return null;
-      }
+  const targetUserId = notificationData.targetUserId;
+  if (!targetUserId) {
+    console.log("Notificação sem targetUserId. Abortando.");
+    return;
+  }
 
-      logger.log(
-          `Nova notificação para o usuário: ${targetUserId}`,
-      );
+  const db = getDatabase();
+  const userSnapshot = await db.ref(`/users/${targetUserId}`).get();
 
-      // Caminho correto para o token salvo pelo App.js
-      const tokenPath =
-      `/users/${targetUserId}/devicePushToken`;
+  if (!userSnapshot.exists()) {
+    console.log("Usuário não encontrado:", targetUserId);
+    return;
+  }
 
-      const tokenRef = admin
-          .database()
-          .ref(tokenPath);
+  const fcmToken = userSnapshot.val().fcmToken;
 
-      const tokenSnapshot =
-      await tokenRef.once("value");
+  if (!fcmToken) {
+    console.log("Usuário sem fcmToken. Abortando.");
+    return;
+  }
 
-      const pushToken = tokenSnapshot.val();
+  console.log(`Enviando notificação ao token: ${fcmToken}`);
 
-      if (!pushToken) {
-        logger.warn(
-            `Usuário ${targetUserId} não possui ` +
-          "um devicePushToken. Saindo.",
-        );
-        return null;
-      }
-
-      logger.log(
-          `Encontrado token: ${pushToken} ` +
-        `para o usuário ${targetUserId}`,
-      );
-
-      const payload = {
-        notification: {
-          title:
-          tituloNotification ||
-          "Alerta de Emergência!",
-          body:
-          descricaoNotification ||
-          "Seu contato precisa de ajuda.",
-        },
-        token: pushToken,
-      };
-
-      try {
-        const response =
-        await admin.messaging().send(payload);
-
-        logger.log(
-            "Notificação enviada com sucesso:",
-            response,
-        );
-      } catch (error) {
-        logger.error(
-            "Erro ao enviar notificação via FCM:",
-            error,
-        );
-      }
-
-      return null;
+  const payload = {
+    notification: {
+      title: notificationData.tituloNotification || "Você tem uma nova notificação!",
+      body: notificationData.descricaoNotification || "Abra o app para ver os detalhes.",
     },
-);
-
-/**
- * Função acionada por HTTPS.
- * Permite enviar uma notificação a um dispositivo
- * específico via requisição web.
- */
-exports.sendPushNotification = onRequest(
-    async (req, res) => {
-      const {
-        deviceToken,
-        title,
-        body,
-      } = req.body;
-
-      if (!deviceToken || !title || !body) {
-        logger.warn(
-            "Requisição incompleta. " +
-          "Faltando deviceToken, title ou body.",
-        );
-        return res
-            .status(400)
-            .send(
-                "Os campos 'deviceToken', 'title' e 'body' são " +
-            "obrigatórios.",
-            );
-      }
-
-      const payload = {
-        notification: {
-          title: title,
-          body: body,
-        },
-        token: deviceToken,
-      };
-
-      try {
-        const response =
-        await admin.messaging().send(payload);
-
-        logger.log(
-            `Notificação HTTP enviada com sucesso para ` +
-          `${deviceToken}:`,
-            response,
-        );
-
-        res
-            .status(200)
-            .send("Notificação enviada com sucesso.");
-      } catch (error) {
-        logger.error(
-            `Erro ao enviar notificação HTTP para ` +
-          `${deviceToken}:`,
-            error,
-        );
-
-        res
-            .status(500)
-            .send("Erro ao enviar notificação.");
-      }
+    data: {
+      screen: "Notificacoes",
+      notificationId: event.params.notificationId,
     },
-);
+  };
+
+  try {
+    const messaging = getMessaging();
+    const response = await messaging.send({
+      token: fcmToken,
+      notification: payload.notification,
+      data: payload.data,
+    });
+    console.log("Notificação enviada com sucesso:", response);
+  } catch (error) {
+    console.error("Erro ao enviar notificação:", error);
+  }
+});

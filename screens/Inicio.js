@@ -180,7 +180,7 @@ const HomeScreen = ({ navigation }) => {
                             news.filter((item, index) => item.Capa && !imageErrorIndices.has(index)).map((item, index) => (
                                 <View style={styles.newsCard} key={index}>
                                     <Image
-                                        source={{ uri: item.Capa }}
+                                        source={{ uri: `https://www.cmaquiraz.ce.gov.br/fotos/${item.Id}/Capa${item.Id}.jpg` }}
                                         style={styles.newsImage}
                                         onError={() => handleImageError(index) }
                                     />
