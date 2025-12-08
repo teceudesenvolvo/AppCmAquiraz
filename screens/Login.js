@@ -43,8 +43,9 @@ const LoginScreen = ({navigation}) => {
             // Este método é o único usado para autenticação, excluindo o login anônimo.
             await signInWithEmailAndPassword(AUTH, email, password);
             
-            // Sucesso
-            navigation.replace('MainApp') 
+            // Sucesso! A navegação para 'MainApp' agora é tratada automaticamente
+            // pelo listener onAuthStateChanged em App.js. A chamada manual
+            // navigation.replace('MainApp') foi removida para evitar conflitos.
             console.log('Login bem-sucedido! Redirecionando...');
 
         } catch (e) {

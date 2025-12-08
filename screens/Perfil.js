@@ -147,9 +147,10 @@ const ProfileScreen = ({ navigation }) => {
         try {
             if (AUTH) {
                 await signOut(AUTH);
+                // A navegação para a tela de Login agora é tratada automaticamente
+                // pelo listener onAuthStateChanged em App.js.
+                // A linha abaixo foi removida para evitar conflitos.
             }
-            // Navega para a tela de Login, assumindo que ela existe na stack de navega\u00e7\u00e3o
-            navigation.replace('Login'); 
         } catch (error) {
             console.error("Erro ao fazer logout:", error);
             Alert.alert('Erro', 'N\u00e3o foi poss\u00edvel sair. Tente novamente.');
